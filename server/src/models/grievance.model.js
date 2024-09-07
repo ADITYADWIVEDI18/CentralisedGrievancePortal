@@ -1,6 +1,11 @@
 import mongoose, { Schema } from "mongoose";
 
 const grievanceSchema = new Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User' // Assuming you have a User model
+    },
     name: {
         type: String,
         required: true,
