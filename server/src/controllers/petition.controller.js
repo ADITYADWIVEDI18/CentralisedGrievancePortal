@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { Petition, Upvote } from "../models/petition.model.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 // Create a petition
 export const createPetition = asyncHandler(async (req, res) => {
@@ -71,8 +72,15 @@ export const getPetitionById = asyncHandler(async (req, res) => {
         throw new Error('Petition not found');
     }
 
-    res.status(200).json({
-        message: "Petition details fetched successfully",
-        petition,
-    });
+    res.status(200).json(new ApiResponse(200, petition, "Fetched Petition Successfully"));
+});
+
+export const getAllPetitons = asyncHandler(async (req, res) => {
+    /*
+        1. Fetch all Petitions submitted by all users
+    */
+
+    const grievances = await Petition.find({}); // Fetch all petitions
+
+    return res.status(200).json(new ApiResponse(200, grievances, "All petitions fetched successfully"));
 });

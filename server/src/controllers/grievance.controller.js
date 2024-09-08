@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+
 const submitGrievance = asyncHandler(async (req, res) => {
     /*
         1. User must be authenticated via verifyJWT middleware
@@ -19,10 +20,10 @@ const submitGrievance = asyncHandler(async (req, res) => {
 
     const newGrievance = {
         user: req.user._id,
-        name: req.user.username,  // Automatically fetched from the logged-in user
-        email: req.user.email,  // Automatically fetched from the logged-in user
+        name: req.user.username,
+        email: req.user.email,
         grievance,
-        submittedAt: new Date(),  // Automatically adds the current date and time
+        submittedAt: new Date(),
     };
 
 
