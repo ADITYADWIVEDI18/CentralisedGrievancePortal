@@ -17,10 +17,14 @@ app.use(cookieParser());
 // Import routes
 
 import userRouter from './routes/user.routes.js'
+import grievanceRouter from './routes/grievance.routes.js'
+import petitionRouter from './routes/petition.routes.js'
 
 //Routes declaration
 
 app.use("/api/v1/users", userRouter) // /api/v1/users is prefix
+app.use("/api/v1/grievances", grievanceRouter)
+app.use("/api/v1/petitions", petitionRouter)
 
 
 export default app;

@@ -12,6 +12,8 @@ export const createPetition = asyncHandler(async (req, res) => {
 
     const petition = new Petition({
         user: req.user._id,
+        name: req.user.username,
+        email: req.user.email,
         title,
         description,
     });
@@ -55,5 +57,22 @@ export const upvotePetition = asyncHandler(async (req, res) => {
     res.status(200).json({
         message: "Petition upvoted successfully",
         upvoteCount: petition.upvoteCount
+    });
+});
+
+export const getPetitionById = asyncHandler(async (req, res) => {
+    const { id } = req.params;  // Petition ID from the request parameters
+
+    // Find the petition by ID
+    const petition = await Petition.findById(id);
+
+    if (!petition) {
+        res.status(404);
+        throw new Error('Petition not found');
+    }
+
+    res.status(200).json({
+        message: "Petition details fetched successfully",
+        petition,
     });
 });
