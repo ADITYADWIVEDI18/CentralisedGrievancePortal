@@ -11,6 +11,7 @@ import {
     getUserGrievances,
     getPendingGrievances
 } from "../controllers/user.controller.js";
+import { createPetition, upvotePetition } from "../controllers/petition.controller.js";
 import { verifyJWT, verifyAdmin } from "../middlewares/auth.middleware.js";
 import multer from "multer";
 
@@ -36,6 +37,14 @@ router.route("/grievance-count").get(upload.none(), verifyAdmin, getGrievanceCou
 router.route("/respond-grievance/:id").put(upload.none(), verifyAdmin, respondToGrievance)
 router.route("/all-grievances").get(upload.none(), verifyAdmin, getAllGrievances)
 router.route("/pending-grievances").get(upload.none(), verifyAdmin, getPendingGrievances)
+
+//Petition
+
+// Route to create a petition
+router.route("/create-petition").post(upload.none(), verifyJWT, createPetition)
+
+// Route to upvote a petition (increments the upvoteCount)
+router.route("/:id/upvote-petition").put(upload.none(), verifyJWT, upvotePetition)
 
 
 

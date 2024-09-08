@@ -4,7 +4,7 @@ const grievanceSchema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User' // Assuming you have a User model
+        ref: 'User'
     },
     name: {
         type: String,
@@ -29,7 +29,7 @@ const grievanceSchema = new Schema({
     },
     status: {
         type: Boolean,
-        default: false  // false for "pending", true for "solved"
+        default: false
     }
 }, {
     timestamps: true
