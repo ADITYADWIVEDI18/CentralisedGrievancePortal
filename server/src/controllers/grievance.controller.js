@@ -2,7 +2,7 @@ import { Grievance } from "../models/grievance.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import { sendGrievanceResolvedEmail } from "../utils/mailer.js";
 
 const submitGrievance = asyncHandler(async (req, res) => {
     /*
@@ -53,13 +53,6 @@ const getGrievanceCounts = asyncHandler(async (req, res) => {
 });
 
 const respondToGrievance = asyncHandler(async (req, res) => {
-    /*
-        1. Verify admin rights using verifyAdmin middleware
-        2. Validate and fetch the grievance by ID
-        3. Update the grievance status to 'solved' (true)
-        4. Respond with a success message
-    */
-
     const { id } = req.params;
 
     // Validate the grievance ID
@@ -76,6 +69,17 @@ const respondToGrievance = asyncHandler(async (req, res) => {
 
     if (!updatedGrievance) {
         throw new ApiError(404, "Grievance not found");
+    }
+
+    // Notify the grievance author
+    try {
+        await sendGrievanceResolvedEmail(updatedGrievance, {
+            name: updatedGrievance.name,
+            email: updatedGrievance.email
+        });
+    } catch (error) {
+        console.error('Error sending resolution email:', error);
+        // You might want to handle the error here or log it
     }
 
     return res.status(200).json(new ApiResponse(200, updatedGrievance, "Grievance responded to and marked as complete"));
