@@ -4,6 +4,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendGrievanceResolvedEmail } from "../utils/mailer.js";
 
+/** */
+
 const submitGrievance = asyncHandler(async (req, res) => {
     /*
         1. User must be authenticated via verifyJWT middleware
@@ -31,6 +33,57 @@ const submitGrievance = asyncHandler(async (req, res) => {
 
     return res.status(201).json(new ApiResponse(201, submission, "Form submitted successfully"));
 });
+
+
+const getUserGrievances = asyncHandler(async (req, res) => {
+    const userGrievances = await Grievance.find({ user: req.user._id }); // Fetch grievances for this user
+
+    return res.status(200).json(new ApiResponse(200, userGrievances, "User grievances fetched successfully"));
+});
+
+
+const editGrievance = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { grievance } = req.body;
+
+    if (!grievance) {
+        throw new ApiError(400, "Grievance content is required");
+    }
+
+    const grievanceToUpdate = await Grievance.findById(id);
+
+    if (!grievanceToUpdate) {
+        throw new ApiError(404, "Grievance not found");
+    }
+
+    if (grievanceToUpdate.user.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You are not authorized to edit this grievance");
+    }
+
+    grievanceToUpdate.grievance = grievance;
+    grievanceToUpdate.updatedAt = new Date();
+
+    await grievanceToUpdate.save();
+
+    return res.status(200).json(new ApiResponse(200, grievanceToUpdate, "Grievance updated successfully"));
+});
+
+const deleteGrievance = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const grievance = await Grievance.findByIdAndDelete(id);
+
+    if (!grievance) {
+        throw new ApiError(404, "Grievance not found");
+    }
+
+    if (grievance.user.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You are not authorized to delete this grievance");
+    }
+
+    return res.status(200).json(new ApiResponse(200, null, "Grievance deleted successfully"));
+});
+
 
 const getGrievanceCounts = asyncHandler(async (req, res) => {
     /*
@@ -125,14 +178,6 @@ const getGrievanceById = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, grievance, "Grievance details fetched successfully"));
 });
 
-
-
-const getUserGrievances = asyncHandler(async (req, res) => {
-    const userGrievances = await Grievance.find({ user: req.user._id }); // Fetch grievances for this user
-
-    return res.status(200).json(new ApiResponse(200, userGrievances, "User grievances fetched successfully"));
-});
-
 export {
     submitGrievance,
     getGrievanceCounts,
@@ -140,5 +185,7 @@ export {
     getAllGrievances,
     getUserGrievances,
     getPendingGrievances,
-    getGrievanceById
+    getGrievanceById,
+    deleteGrievance,
+    editGrievance
 }

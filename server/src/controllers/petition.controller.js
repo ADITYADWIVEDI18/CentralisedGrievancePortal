@@ -27,6 +27,61 @@ export const createPetition = asyncHandler(async (req, res) => {
     });
 });
 
+export const editPetition = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { title, description } = req.body;
+
+    if (!title || !description) {
+        res.status(400);
+        throw new Error('Please provide both title and description');
+    }
+
+    const petition = await Petition.findById(id);
+
+    if (!petition) {
+        res.status(404);
+        throw new Error('Petition not found');
+    }
+
+    if (petition.user.toString() !== req.user._id.toString()) {
+        res.status(403);
+        throw new Error('You are not authorized to edit this petition');
+    }
+
+    petition.title = title;
+    petition.description = description;
+    petition.updatedAt = new Date();
+
+    const updatedPetition = await petition.save();
+
+    res.status(200).json({
+        message: "Petition updated successfully",
+        petition: updatedPetition,
+    });
+});
+
+export const deletePetition = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const petition = await Petition.findById(id);
+
+    if (!petition) {
+        res.status(404);
+        throw new Error('Petition not found');
+    }
+
+    if (petition.user.toString() !== req.user._id.toString()) {
+        res.status(403);
+        throw new Error('You are not authorized to delete this petition');
+    }
+
+    await petition.deleteOne();
+
+    res.status(200).json({
+        message: "Petition deleted successfully",
+    });
+});
+
 // Upvote a petition (increment upvoteCount)
 export const upvotePetition = asyncHandler(async (req, res) => {
     const petitionId = req.params.id;
