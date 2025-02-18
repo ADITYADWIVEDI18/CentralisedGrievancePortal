@@ -10,7 +10,7 @@ const FormAndCards = () => {
                 </h1>
 
                 {/* Main Layout */}
-                <div className=" gap-8">
+                <div className="gap-8">
                     {/* Left: Form Section */}
                     <div className="bg-white p-6 rounded-2xl shadow-lg">
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Submit a grievance</h2>
@@ -39,16 +39,19 @@ const FormAndCards = () => {
                     <div className="grid space-y-6 mt-12">
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Track your grievances</h2>
                         <Card
-                            title="Project Alpha"
-                            description="This is a brief overview of Project Alpha. Learn more about its features and impact."
+                            author="John Doe"
+                            grievance="This is a grievance about Project Alpha. The issue needs urgent attention."
+                            status="Resolved"
                         />
                         <Card
-                            title="Beta Version Released"
-                            description="Exciting updates in the latest beta version. Find out what’s new and improved."
+                            author="Jane Smith"
+                            grievance="There are some bugs in the beta version. Needs fixing as soon as possible."
+                            status="Pending"
                         />
                         <Card
-                            title="Upcoming Features"
-                            description="A sneak peek into the upcoming features we’re working on for the next release."
+                            author="Alice Johnson"
+                            grievance="Upcoming features should include better accessibility options."
+                            status="Under Review"
                         />
                     </div>
                 </div>
@@ -58,10 +61,13 @@ const FormAndCards = () => {
 };
 
 // Card Component
-const Card = ({ title, description }) => (
+const Card = ({ author, grievance, status }) => (
     <div className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600">{description}</p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">{author}</h3>
+        <p className="text-gray-600 mb-2">{grievance}</p>
+        <p className={`text-sm font-semibold ${status === 'Resolved' ? 'text-green-500' : status === 'Pending' ? 'text-yellow-500' : 'text-blue-500'}`}>
+            Status: {status}
+        </p>
     </div>
 );
 
