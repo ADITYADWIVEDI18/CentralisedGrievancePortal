@@ -2,8 +2,10 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation'
 
 const LoginForm = () => {
+    const router = useRouter()
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -17,7 +19,8 @@ const LoginForm = () => {
                 username,
                 password
             });
-            console.log(response.data);
+            console.log(response);
+            router.push('/user')
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please try again.');
         }
