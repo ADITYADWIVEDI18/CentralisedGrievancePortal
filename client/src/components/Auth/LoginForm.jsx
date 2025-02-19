@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation'
 
 const LoginForm = () => {
-    const router = useRouter()
+    const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');

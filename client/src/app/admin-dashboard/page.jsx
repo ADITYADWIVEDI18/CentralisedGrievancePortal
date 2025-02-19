@@ -1,60 +1,59 @@
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 
 export default function AdminDashboard() {
     const [grievances, setGrievances] = useState([
         {
             id: 1,
             author: "John Doe",
-            date: "2024-02-10T14:48:00.000Z",
+            date: "10/02/2024",
             content: "The cafeteria food quality needs improvement.",
             status: "Pending"
         },
         {
             id: 2,
             author: "Jane Smith",
-            date: "2024-02-12T10:30:00.000Z",
+            date: "10/02/2024",
             content: "Wi-Fi connectivity issues in the library.",
             status: "Resolved"
         },
         {
             id: 3,
             author: "Emily Johnson",
-            date: "2024-02-14T08:15:00.000Z",
+            date: "10/02/2024",
             content: "Water leakage in the second-floor restroom.",
             status: "Pending"
         },
         {
             id: 4,
             author: "Michael Brown",
-            date: "2024-02-15T16:50:00.000Z",
+            date: "10/02/2024",
             content: "Lack of parking space near the main building.",
             status: "Resolved"
         },
         {
             id: 5,
             author: "Sarah Lee",
-            date: "2024-02-16T10:20:00.000Z",
+            date: "10/02/2024",
             content: "Poor lighting in the stairwells.",
             status: "Pending"
         },
         {
             id: 6,
             author: "David Kim",
-            date: "2024-02-17T11:45:00.000Z",
+            date: "10/02/2024",
             content: "Broken elevator in Building A.",
             status: "Pending"
         },
         {
             id: 7,
             author: "Olivia White",
-            date: "2024-02-18T13:05:00.000Z",
+            date: "10/02/2024",
             content: "Unresponsive air conditioning in the classrooms.",
             status: "Resolved"
         }
     ]);
-    
+
     const [petitions, setPetitions] = useState([
         {
             id: 1,
@@ -110,7 +109,7 @@ export default function AdminDashboard() {
                         {grievances.map((grievance) => (
                             <tr key={grievance.id} className="border-b">
                                 <td className="p-3 border">{grievance.author}</td>
-                                <td className="p-3 border">{new Date(grievance.date).toLocaleDateString()}</td>
+                                <td className="p-3 border">{grievance.date}</td>
                                 <td className="p-3 border text-blue-500 cursor-pointer underline" onClick={() => openModal(grievance)}>View</td>
                                 <td className={`p-3 border ${grievance.status === "Resolved" ? "text-green-600" : "text-yellow-500"}`}>
                                     {grievance.status === "Resolved" ? "Already Resolved" : grievance.status}
@@ -148,7 +147,7 @@ export default function AdminDashboard() {
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
                         <h3 className="text-xl font-bold mb-4">{selectedItem.content}</h3>
                         <p className="text-gray-700"><strong>Author:</strong> {selectedItem.author}</p>
-                        <p className="text-gray-700"><strong>Date:</strong> {new Date(selectedItem.date).toLocaleDateString()}</p>
+                        <p className="text-gray-700"><strong>Date:</strong> {selectedItem.date}</p>
                         <div className="mt-4 flex justify-end">
                             <button onClick={closeModal} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Close</button>
                         </div>

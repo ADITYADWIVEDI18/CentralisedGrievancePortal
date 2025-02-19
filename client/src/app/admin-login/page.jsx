@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
+import { useRouter } from 'next/navigation'
 
 export default function AdminLogin() {
+    const router = useRouter();
     const [username] = useState("admin");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -17,7 +19,8 @@ export default function AdminLogin() {
             });
 
             if (response.status === 200) {
-                alert("Login successful!");
+                // alert("Login successful!");
+                router.push('/admin-dashboard');
                 // Navigate to admin dashboard
                 // Example: router.push("/admin/dashboard") if using Next.js
             }
