@@ -107,24 +107,20 @@ const getGrievanceCounts = asyncHandler(async (req, res) => {
 
 const respondToGrievance = asyncHandler(async (req, res) => {
     const { id } = req.params;
-
     // Validate the grievance ID
     if (!id) {
         throw new ApiError(400, "Grievance ID is required");
     }
-
     // Find and update the grievance
     const updatedGrievance = await Grievance.findByIdAndUpdate(
         id,
         { status: true },  // Mark as 'solved'
         { new: true }  // Return the updated document
     );
-
     if (!updatedGrievance) {
         throw new ApiError(404, "Grievance not found");
     }
-
-    // Notify the grievance author
+    // Notify the grievance author by sending email
     try {
         await sendGrievanceResolvedEmail(updatedGrievance, {
             name: updatedGrievance.name,
@@ -132,9 +128,7 @@ const respondToGrievance = asyncHandler(async (req, res) => {
         });
     } catch (error) {
         console.error('Error sending resolution email:', error);
-        // You might want to handle the error here or log it
     }
-
     return res.status(200).json(new ApiResponse(200, updatedGrievance, "Grievance responded to and marked as complete"));
 });
 

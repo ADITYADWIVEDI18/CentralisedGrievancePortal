@@ -26,6 +26,5 @@ export const sendGrievanceResolvedEmail = async (grievance, author) => {
         await transporter.sendMail(mailOptions);
     } catch (error) {
         console.error('Error sending email:', error);
-        // Handle error (optional)
     }
 };

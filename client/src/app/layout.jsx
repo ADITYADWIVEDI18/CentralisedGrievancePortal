@@ -1,5 +1,7 @@
 import { Poppins } from "next/font/google"
 import "./globals.css";
+import { UserProvider } from "@/context/userContext";
+
 const poppins = Poppins({
   weight: ['100', "200", "300", '400', "500", "600", '700', "800", "900"],
   subsets: ['latin'],
@@ -15,9 +17,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${poppins.className} antialiased`}
+        className={`${poppins.className} antialiased bg-[#F6F6F6]`}
       >
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
       </body>
     </html>
   );

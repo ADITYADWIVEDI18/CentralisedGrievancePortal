@@ -2,7 +2,8 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const LoginForm = () => {
     const router = useRouter();
@@ -19,8 +20,20 @@ const LoginForm = () => {
                 username,
                 password
             });
-            console.log(response);
-            router.push('/user')
+
+            if (response.data.success) {
+                const { accessToken, refreshToken, user } = response.data.data;
+
+                // Store tokens securely in cookies
+                Cookies.set('accessToken', accessToken, { expires: 7, secure: true, sameSite: 'Strict' });
+                Cookies.set('refreshToken', refreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
+
+                // Store user details in cookies
+                Cookies.set('user', JSON.stringify(user), { expires: 7 });
+
+                // Redirect to user dashboard
+                router.push('/user');
+            }
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please try again.');
         }
