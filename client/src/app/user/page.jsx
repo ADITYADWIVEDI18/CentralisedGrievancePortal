@@ -3,10 +3,11 @@ import Navbar from "@/components/user/Navbar"
 
 const UserPage = () => {
     return (
-        <div>
-            <Navbar />
-            <Heading />
-        </div>
+        <div className="">
+  <Navbar />
+  <Heading />
+</div>
+
     )
 }
 
