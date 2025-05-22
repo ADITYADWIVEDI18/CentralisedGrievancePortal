@@ -19,7 +19,8 @@ export const sendGrievanceResolvedEmail = async (grievance, author) => {
         from: "aditya.pandey.1018@gmail.com", // sender
         to: author.email, // receiver
         subject: 'Your Grievance Has Been Resolved',
-        text: `Dear ${author.name},\n\nYour grievance has been resolved.\n\nGrievance Details:\n${grievance.grievance}\n\nResolved At: ${new Date()}`,
+        text: `Dear ${author.name},\n\nYour grievance has been resolved.\n\nGrievance
+        Details:\n${grievance.grievance}\n\nResolved At: ${new Date()}`,
     };
 
     try {

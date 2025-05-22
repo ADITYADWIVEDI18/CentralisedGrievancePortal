@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { UserContext } from '@/context/userContext';
+import { useState, useEffect, useRef, useContext } from "react";
 import { Menu, X, User } from "lucide-react";
-
+import LogoutButton from "@/components/Auth/Logout.jsx";
 const Navbar = () => {
+    const { user } = useContext(UserContext);
+
     const [isOpen, setIsOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -31,10 +34,9 @@ const Navbar = () => {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex gap-12">
-                        <Link href="/user/username" className="text-lg font-medium">My Grievances</Link>
+                        <Link href={`/user/${user?.username}`} className="text-lg font-medium">My Grievances</Link>
                         <Link href="/petitions" className="text-lg font-medium">Petitions</Link>
                         <Link href="/user/my-grievance" className="text-lg font-medium">Submit Grievance</Link>
-                        <Link href="/submit" className="text-lg font-medium">Raise Petition</Link>
                     </nav>
 
                     {/* User Dropdown */}
@@ -44,25 +46,23 @@ const Navbar = () => {
                         </button>
                         {isDropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden">
-                                <Link href="/user/my-profile" className="block px-4 py-2 hover:bg-gray-200">View Profile</Link>
-                                <button className="block w-full text-left px-4 py-2 hover:bg-gray-200">Logout</button>
+                                <Link href={`/user/${user.username}`} className="block px-4 py-2 hover:bg-gray-200">View Profile</Link>
                             </div>
                         )}
+                        <div className="ml-4">
+                            <LogoutButton />
+                        </div>
                     </div>
 
-                    {/* Mobile Menu Toggle */}
                     <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden focus:outline-none">
                         {isOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
-
-                {/* Mobile Navigation */}
                 {isOpen && (
                     <nav className="lg:hidden flex flex-col gap-4 mt-4 border-t pt-4">
                         <Link href="/user" className="text-lg font-medium">My Grievances</Link>
                         <Link href="/petitions" className="text-lg font-medium">Petitions</Link>
                         <Link href="/user/my-grievance" className="text-lg font-medium">Submit Grievance</Link>
-                        <Link href="/submit" className="text-lg font-medium">Raise Petition</Link>
                     </nav>
                 )}
             </div>

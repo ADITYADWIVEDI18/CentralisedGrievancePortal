@@ -4,8 +4,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendGrievanceResolvedEmail } from "../utils/mailer.js";
 
-/** */
 
+// Create  Grievance
 const submitGrievance = asyncHandler(async (req, res) => {
     /*
         1. User must be authenticated via verifyJWT middleware

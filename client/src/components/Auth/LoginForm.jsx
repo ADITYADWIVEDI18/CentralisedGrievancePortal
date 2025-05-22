@@ -74,6 +74,9 @@ const LoginForm = () => {
                             Register
                         </Link>
                     </p>
+                    <p className="mt-2 text-sm text-gray-600 text-center font-medium">
+                        <Link href="/admin-login" className="text-indigo-400 font-bold">Log In as Admin</Link>
+                    </p>
                 </div>
             </div>
         </div>

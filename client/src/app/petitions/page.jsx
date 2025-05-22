@@ -1,92 +1,115 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import axios from "axios";
+import Link from "next/link";
+import Navbar from "@/components/user/Navbar";
+import { UserContext } from "@/context/userContext.js"; // Adjust path as needed
 
 export default function PetitionPage() {
-    const [petition, setPetition] = useState({
-        author: "John Doe",
-        email: "john.doe@example.com",
-        content: "We need better public transportation facilities in our city. The buses are overcrowded, and the routes are limited. Sign this petition to bring change!",
-        upvotes: 5
-    });
+    const { user } = useContext(UserContext);
+    const [petitions, setPetitions] = useState([]);
 
-    const [hasUpvoted, setHasUpvoted] = useState(false);
-    const [showForm, setShowForm] = useState(false);
-    const [newPetition, setNewPetition] = useState({ heading: "", content: "" });
-
-    const handleUpvote = () => {
-        if (!hasUpvoted) {
-            setPetition((prev) => ({ ...prev, upvotes: prev.upvotes + 1 }));
-            setHasUpvoted(true);
+    const fetchPetitions = async () => {
+        try {
+            const res = await axios.get("http://localhost:8000/api/v1/petitions/archive", {
+                withCredentials: true,
+            });
+            setPetitions(res.data.data || []);
+        } catch (error) {
+            console.error("Error fetching petitions:", error);
         }
     };
 
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
-        console.log("New Petition Submitted:", newPetition);
-        setShowForm(false);
+    useEffect(() => {
+        fetchPetitions();
+    }, []);
+
+    const handleDelete = async (id) => {
+        const confirmed = window.confirm("Are you sure you want to delete this petition?");
+        if (!confirmed) return;
+
+        try {
+            await axios.delete(`http://localhost:8000/api/v1/petitions/delete/${id}`, {
+                withCredentials: true,
+            });
+            setPetitions((prev) => prev.filter((petition) => petition._id !== id));
+        } catch (error) {
+            console.error("Error deleting petition:", error);
+        }
+    };
+
+    const handleUpvote = async (id) => {
+        try {
+            const res = await axios.post(
+                `http://localhost:8000/api/v1/petitions/upvote/${id}`,
+                {}, // assuming no body is needed
+                { withCredentials: true }
+            );
+
+            // Update the upvote count locally
+            setPetitions((prev) =>
+                prev.map((petition) =>
+                    petition._id === id
+                        ? { ...petition, upvoteCount: res.data.upvoteCount ?? petition.upvoteCount + 1 }
+                        : petition
+                )
+            );
+        } catch (error) {
+            console.error("Error upvoting petition:", error);
+            alert("Failed to upvote petition. Please try again.");
+        }
     };
 
     return (
-        <div className="min-h-screen p-8 bg-gradient-to-b from-blue-100 to-blue-200 flex flex-col items-center">
-            <h2 className="text-4xl font-extrabold text-blue-700 mb-6">Petition Page</h2>
+        <>
+            <Navbar />
 
-            {/* Display First Petition */}
-            <div className="bg-white p-6 shadow-xl rounded-xl w-full max-w-2xl transition-transform transform hover:scale-105">
-                <h3 className="text-2xl font-semibold text-gray-900">{petition.author}</h3>
-                <p className="text-gray-500 text-sm">{petition.email}</p>
-                <p className="mt-4 text-gray-700 text-lg">{petition.content}</p>
-                
-                <div className="flex justify-between items-center mt-6">
-                    <p className="text-lg font-semibold text-blue-700">Upvotes: {petition.upvotes}</p>
-                    <button 
-                        onClick={handleUpvote} 
-                        disabled={hasUpvoted}
-                        className={`px-5 py-2 text-white font-semibold rounded-lg shadow-md transition-all ${hasUpvoted ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
-                    >
-                        {hasUpvoted ? "Upvoted" : "Upvote"}
-                    </button>
+            <div className="min-h-screen p-6 bg-gray-50 flex flex-col items-center">
+                <h2 className="text-4xl font-bold text-blue-700 mb-8">All Petitions</h2>
+
+                <div className="grid grid-cols-1 gap-6 max-w-4xl w-full">
+                    {petitions.map((petition) => (
+                        <div
+                            key={petition._id}
+                            className="relative bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-transform transform hover:scale-[1.01]"
+                        >
+                            {/* Delete button */}
+                            {user?.email === petition.email && (
+                                <button
+                                    onClick={() => handleDelete(petition._id)}
+                                    className="absolute top-4 right-4 text-red-500 hover:text-red-700 text-lg"
+                                    title="Delete Petition"
+                                >
+                                    🗑️
+                                </button>
+                            )}
+                            <div className="mb-1 text-sm text-gray-500">
+                                {petition.name} • {petition.email}
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-800">{petition.title}</h3>
+                            <p className="mt-2 text-gray-600">{petition.description}</p>
+                            <div className="mt-4 flex items-center space-x-4">
+                                <p className="text-blue-600 font-medium">
+                                    Upvotes: {petition.upvoteCount ?? 0}
+                                </p>
+                                <button
+                                    onClick={() => handleUpvote(petition._id)}
+                                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                                >
+                                    Upvote
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            </div>
 
-            {/* Raise a Petition Button */}
-            {!showForm && (
-                <button 
-                    onClick={() => setShowForm(true)} 
-                    className="mt-6 px-8 py-3 bg-green-600 text-white font-semibold rounded-full shadow-lg hover:bg-green-700 transition-all hover:scale-105"
+                <Link
+                    href="/petitions/raise-petition"
+                    className="mt-10 inline-block bg-green-600 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-700 transition-transform hover:scale-105"
                 >
                     Raise a Petition
-                </button>
-            )}
-
-            {/* Petition Form */}
-            {showForm && (
-                <div className="bg-white p-6 shadow-xl rounded-xl mt-6 w-full max-w-lg transition-transform transform hover:scale-105">
-                    <h3 className="text-2xl font-semibold text-gray-900 mb-4">Enter Your Petition</h3>
-                    <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-                        <input 
-                            type="text"
-                            placeholder="Enter Petition Heading" 
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm"
-                            value={newPetition.heading}
-                            onChange={(e) => setNewPetition({ ...newPetition, heading: e.target.value })}
-                            required
-                        />
-                        <textarea
-                            placeholder="Describe your petition..." 
-                            className="w-full p-3 border border-gray-300 rounded-lg h-32 resize-none focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm"
-                            value={newPetition.content}
-                            onChange={(e) => setNewPetition({ ...newPetition, content: e.target.value })}
-                            required
-                        />
-                        <button 
-                            type="submit" 
-                            className="w-full py-3 bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold rounded-full shadow-md hover:shadow-xl transition-all hover:scale-105"
-                        >
-                            Submit Petition
-                        </button>
-                    </form>
-                </div>
-            )}
-        </div>
+                </Link>
+            </div>
+        </>
     );
 }

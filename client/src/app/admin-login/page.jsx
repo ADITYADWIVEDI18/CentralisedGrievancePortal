@@ -1,35 +1,44 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function AdminLogin() {
     const router = useRouter();
-    const [username] = useState("admin");
+    const [username, setUsername] = useState("admin");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    // Handler for login submission
-    const handleLogin = async (e) => {
+    const handleAdminLogin = async (e) => {
         e.preventDefault();
+        setError("");
+
         try {
             const response = await axios.post("http://localhost:8000/api/v1/users/login", {
                 username,
                 password,
             });
+            console.log(response.data);
 
-            if (response.status === 200) {
-                // alert("Login successful!");
+
+            if (response.data.success) {
+                const { accessToken, refreshToken, user } = response.data.data;
+
+                // Store tokens securely in cookies
+                Cookies.set('accessToken', accessToken, { expires: 7, secure: true, sameSite: 'Strict' });
+                Cookies.set('refreshToken', refreshToken, { expires: 7, secure: true, sameSite: 'Strict' });
+
+                // Store user details in cookies
+                Cookies.set('user', JSON.stringify(user), { expires: 7 });
+
+                // Redirect to user dashboard
                 router.push('/admin-dashboard');
-                // Navigate to admin dashboard
-                // Example: router.push("/admin/dashboard") if using Next.js
             }
-        } catch (error) {
-            if (error.response && error.response.data) {
-                setError(error.response.data.message || "Login failed. Please check your credentials.");
-            } else {
-                setError("An error occurred. Please try again.");
-            }
+        } catch (err) {
+            console.log(err);
+
+            setError(err.response?.data?.message || "Login failed. Please check your credentials.");
         }
     };
 
@@ -37,7 +46,7 @@ export default function AdminLogin() {
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
                 <h2 className="text-2xl font-bold text-center text-gray-800">Admin Portal</h2>
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleAdminLogin} className="space-y-4">
                     <label className="block text-sm font-medium text-gray-700">Username</label>
                     <input
                         type="text"
