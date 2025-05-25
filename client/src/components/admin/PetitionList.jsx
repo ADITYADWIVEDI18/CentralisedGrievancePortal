@@ -11,7 +11,12 @@ export default function PetitionList({ openModal }) {
                 const res = await axios.get("http://localhost:8000/api/v1/petitions/archive", {
                     withCredentials: true,
                 });
-                setPetitions(res.data.data);
+
+                const sortedPetitions = res.data.data.sort(
+                    (a, b) => b.upvoteCount - a.upvoteCount
+                );
+
+                setPetitions(sortedPetitions);
             } catch (error) {
                 console.error("Error fetching petitions:", error);
             }
@@ -19,6 +24,7 @@ export default function PetitionList({ openModal }) {
 
         fetchPetitions();
     }, []);
+
 
     return (
         <div className="bg-white shadow-md rounded-lg p-6 overflow-x-auto">
