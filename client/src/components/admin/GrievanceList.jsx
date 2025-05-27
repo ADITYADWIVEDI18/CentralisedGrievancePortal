@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function GrievanceList({ openModal }) {
+export default function GrievanceList({ openModal, setGrievancesData }) {
     const [grievances, setGrievances] = useState([]);
     const [activeTab, setActiveTab] = useState("pending");
 
@@ -17,6 +17,7 @@ export default function GrievanceList({ openModal }) {
                     withCredentials: true,
                 });
                 setGrievances(res.data.data);
+                setGrievancesData(res.data.data); // pass to parent
             } catch (error) {
                 console.error("Error fetching grievances:", error);
             }

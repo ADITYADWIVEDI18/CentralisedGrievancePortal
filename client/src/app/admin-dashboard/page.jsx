@@ -1,13 +1,16 @@
 "use client";
 import { useState } from "react";
-import GrievanceList from "../../components/admin/GrievanceList";
-import PetitionList from "../../components/admin/PetitionList";
+import GrievanceList from "@/components/admin/GrievanceList";
+import PetitionList from "@/components/admin/PetitionList";
 import LogoutButton from "@/components/Auth/Logout";
 import GrievanceStats from "@/components/admin/GrievanceStats";
+import GrievanceBarChart from "@/components/admin/GrievanceBarChart";
 
 export default function AdminDashboard() {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [grievancesData, setGrievancesData] = useState([]);
+    const [activeTab, setActiveTab] = useState("stats");
 
     const openModal = (item) => {
         setSelectedItem(item);
@@ -22,20 +25,42 @@ export default function AdminDashboard() {
     return (
         <div className="min-h-screen p-8 bg-gray-100">
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold text-slate-800 text-center mb-6">
-                    Admin Dashboard
-                </h2>
-
+                <h2 className="text-3xl font-bold text-slate-800 text-center mb-6">Admin Dashboard</h2>
                 <div className="flex justify-end mb-4">
                     <LogoutButton />
                 </div>
             </div>
 
-            <div>
-                <GrievanceStats />
+            {/* Tabs */}
+            <div className="flex space-x-4 mb-6">
+                <button
+                    className={`px-4 py-2 rounded-md font-medium ${activeTab === "stats"
+                        ? "bg-blue-600 text-white"
+                        : "bg-white border border-gray-300 text-gray-800"
+                        }`}
+                    onClick={() => setActiveTab("stats")}
+                >
+                    Grievance Count
+                </button>
+                <button
+                    className={`px-4 py-2 rounded-md font-medium ${activeTab === "chart"
+                        ? "bg-blue-600 text-white"
+                        : "bg-white border border-gray-300 text-gray-800"
+                        }`}
+                    onClick={() => setActiveTab("chart")}
+                >
+                    Past 7 days
+                </button>
             </div>
 
-            <GrievanceList openModal={openModal} />
+            {/* Toggle between GrievanceStats and GrievanceBarChart */}
+            {activeTab === "stats" ? (
+                <GrievanceStats />
+            ) : (
+                <GrievanceBarChart grievances={grievancesData} />
+            )}
+
+            <GrievanceList openModal={openModal} setGrievancesData={setGrievancesData} />
             <PetitionList openModal={openModal} />
 
             {isModalOpen && selectedItem && (
@@ -45,9 +70,7 @@ export default function AdminDashboard() {
                             {selectedItem.title || selectedItem.grievance || "No Title"}
                         </h3>
 
-                        <p className="text-gray-700">
-                            <strong>Name:</strong> {selectedItem.name || "Unknown"}
-                        </p>
+                        <p className="text-gray-700"><strong>Name:</strong> {selectedItem.name || "Unknown"}</p>
 
                         {"description" in selectedItem && (
                             <p className="text-gray-700 mt-2">
@@ -55,11 +78,9 @@ export default function AdminDashboard() {
                             </p>
                         )}
 
-                        <p className="text-gray-700 mt-2">
-                            <strong>Email:</strong> {selectedItem.email || "N/A"}
-                        </p>
+                        <p className="text-gray-700 mt-2"><strong>Email:</strong> {selectedItem.email || "N/A"}</p>
 
-                        {"status" in selectedItem && selectedItem.status && selectedItem.feedback && (
+                        {selectedItem.status && selectedItem.feedback && (
                             <p className="text-gray-700 mt-2">
                                 <strong>Feedback:</strong> {selectedItem.feedback}
                             </p>
